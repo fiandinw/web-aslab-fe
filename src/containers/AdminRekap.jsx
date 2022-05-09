@@ -31,11 +31,11 @@ function AdminRekap() {
   }, [])
 
   const filterLaporan = (nim, bulan, tahun) => {
-    setFilteredLaporans(laporans.filter((laporan) => laporan.nim == nim))
+    setFilteredLaporans(laporans.filter((laporan) => laporan.nim == nim && laporan.createdAt.split('T')[0].split('-')[1] == bulan))
   }
 
   const handleGotoKembali = () => {
-    //console.log(asistenAktif)
+    //console.log(laporans[0].createdAt.split('T')[0].split('-')[1])
     navigate('/admin/dashboard')
   }
 
@@ -44,7 +44,7 @@ function AdminRekap() {
   }
 
   const handleAsistenSetFilter = () => {
-    filterLaporan(filterState.asisten !== '#' ? filterState.asisten : asistenAktif[0].nim, filterState.bulan, filterState.tahun)
+    filterLaporan(filterState.asisten !== '#' ? filterState.asisten : asistenAktif[0].nim, filterState.bulan !== '#' ? filterState.bulan : '01', filterState.tahun)
   }
 
   return (
@@ -62,23 +62,23 @@ function AdminRekap() {
               ))}
             </select>
             <select name="bulan" id="bulan" onChange={handleAsistenFilter}>
-              <option value="1">Januari</option>
-              <option value="2">Februari</option>
-              <option value="3">Maret</option>
-              <option value="4">April</option>
-              <option value="5">Mei</option>
-              <option value="6">Juni</option>
-              <option value="7">Juli</option>
-              <option value="8">Agustus</option>
-              <option value="9">September</option>
+              <option value="01">Januari</option>
+              <option value="02">Februari</option>
+              <option value="03">Maret</option>
+              <option value="04">April</option>
+              <option value="05">Mei</option>
+              <option value="06">Juni</option>
+              <option value="07">Juli</option>
+              <option value="08">Agustus</option>
+              <option value="09">September</option>
               <option value="10">Oktober</option>
               <option value="11">November</option>
               <option value="12">Desember</option>
             </select>
             <button onClick={handleAsistenSetFilter}>Filter</button>
           </div>
-          <div className="">
-            <table className="table p-4 bg-white shadow rounded-lg">
+          <div className="w-full">
+            <table className="table p-4 bg-white shadow rounded-lg min-w-full">
               <thead>
                 <tr>
                   {/* <th className="border p-4 dark:border-dark-5 whitespace-nowrap font-normal text-gray-900">
@@ -100,7 +100,7 @@ function AdminRekap() {
               </thead>
               <tbody>
                 {!filteredLaporans[0] && <tr>
-                  <td colSpan={4}>Pilih Filter</td>
+                  <td colSpan={4}>Pilih Filter / Tidak Ada Laporan</td>
                 </tr>}
                 {filteredLaporans.map((el) => (
                   <tr key={el._id} className="text-gray-700">
