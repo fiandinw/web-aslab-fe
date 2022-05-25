@@ -112,7 +112,7 @@ export default function () {
                     Rekap Laporan
                   </p>
                   <p className="text-gray-400 dark:text-gray-300 font-light text-md">
-                    Lihat rekap laporan kegiatan harian anda disini
+                    Lihat rekap anda disini
                   </p>
                 </div>
               </a>

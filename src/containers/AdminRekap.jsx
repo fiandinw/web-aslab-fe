@@ -113,8 +113,8 @@ function AdminRekap() {
                     <td className="border p-4 dark:border-dark-5">
                       {el.luaran}
                     </td>
-                    <td className="border p-4 dark:border-dark-5">
-                      {el.dokumentasi}
+                    <td className="border p-4 dark:border-dark-5 text-center">
+                      <img src={el.dokumentasi} alt={el.dokumentasi} className="w-[50px] h-[50px] object-cover"/>
                     </td>
                     <td className="border p-4 dark:border-dark-5">
                       {el.createdAt}

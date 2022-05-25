@@ -11,6 +11,8 @@ export default function () {
   const d = new Date()
   const hariIni = d.toISOString().split('T')[0]
 
+  const [imageSelected, setImageSelected] = useState("")
+
   const [laporans, setLaporans] = useState([])
 
   const [laporan, setLaporan] = useState({
@@ -30,11 +32,13 @@ export default function () {
         const newLaporans = res.data.filter((el) => {
           return el.nim == laporan.nim && el.createdAt.split('T')[0] == hariIni
         })
-        if(newLaporans[0]){
+        if (newLaporans[0]) {
           setLaporans(newLaporans[0])
-          setLaporan({...laporan, 
+          setLaporan({
+            ...laporan,
             catatan: newLaporans[0].catatan,
-            luaran: newLaporans[0].luaran
+            luaran: newLaporans[0].luaran,
+            dokumentasi: newLaporans[0].dokumentasi
           })
         }
       })
@@ -46,48 +50,85 @@ export default function () {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if(!laporans._id){
-      axios(
-        {
-          method: 'POST',
-          headers: { 'content-type': 'application/x-www-form-urlencoded' },
-          data: qs.stringify(laporan),
-          url: 'http://127.0.0.1:5000/api/laporan'
-        }
-      ).then(() => {
-        console.log("Sukses")
-      }).catch((err) => {
-        console.log(err)
-      })
-      swal(`Berhasil`, `Laporan berhasil dibuat`, "success").then(() => {
-        navigate('/dashboard')
-      })
-    }else{
-      axios(
-        {
-          method: 'PUT',
-          headers: { 'content-type': 'application/x-www-form-urlencoded' },
-          data: qs.stringify(laporan),
-          url: `http://127.0.0.1:5000/api/laporan/${laporans._id}`
-        }
-      ).then(() => {
-        console.log("Sukses")
-      }).catch((err) => {
-        console.log(err)
-      })
-      swal(`Berhasil`, `Laporan berhasil diubah`, "success").then(() => {
-        navigate('/dashboard')
-      })
+    const formData = new FormData()
+    formData.append("file", imageSelected)
+    formData.append("upload_preset", "krvjtctc")
+    if (!laporans._id) {
+      axios.post("https://api.cloudinary.com/v1_1/fiandinw/image/upload", formData)
+        .then((res) => {
+          console.log("sukses", res)
+          axios(
+            {
+              method: 'POST',
+              headers: { 'content-type': 'application/x-www-form-urlencoded' },
+              data: qs.stringify({...laporan, dokumentasi: res.data.secure_url}),
+              url: 'http://127.0.0.1:5000/api/laporan'
+            }
+          ).then(() => {
+            console.log("Sukses")
+            swal(`Berhasil`, `Laporan berhasil dibuat`, "success").then(() => {
+              navigate('/dashboard')
+            })
+          }).catch((err) => {
+            console.log(err)
+          })
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    } else {
+      axios.post("https://api.cloudinary.com/v1_1/fiandinw/image/upload", formData)
+        .then((res) => {
+          console.log("sukses", res.data.secure_url)
+          axios(
+            {
+              method: 'PUT',
+              headers: { 'content-type': 'application/x-www-form-urlencoded' },
+              data: qs.stringify({...laporan, dokumentasi: res.data.secure_url}),
+              url: `http://127.0.0.1:5000/api/laporan/${laporans._id}`
+            }
+          ).then(() => {
+            console.log("Sukses")
+            swal(`Berhasil`, `Laporan berhasil diubah`, "success").then(() => {
+              navigate('/dashboard')
+            })
+          }).catch((err) => {
+            console.log(err)
+          })
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+      // axios(
+      //   {
+      //     method: 'PUT',
+      //     headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      //     data: qs.stringify(laporan),
+      //     url: `http://127.0.0.1:5000/api/laporan/${laporans._id}`
+      //   }
+      // ).then(() => {
+      //   console.log("Sukses")
+      //   swal(`Berhasil`, `Laporan berhasil diubah`, "success").then(() => {
+      //     navigate('/dashboard')
+      //   })
+      // }).catch((err) => {
+      //   console.log(err)
+      // })
     }
   }
 
   const handleGotoKembali = () => {
     navigate('/dashboard')
+    //console.log(imageSelected)
+  }
+
+  const handleFile = (e) => {
+    setImageSelected(e.target.files[0])
   }
 
   return (
     <>
-      <Navbar/>
+      <Navbar />
       <div className="flex justify-center font-light p-4 pb-24 md:px-8 lg:px-36">
         <div className="bg-white w-full rounded-lg px-4 py-8 flex flex-col items-center gap-2">
           <div className="w-full">
@@ -141,14 +182,18 @@ export default function () {
             </div>
 
             <div>
-              <div>Upload Dokumentasi Kegiatan</div>
-              <button type="button" className="w-fit py-2 px-4 flex justify-center items-center  bg-red-600 hover:bg-red-700 focus:ring-red-500 focus:ring-offset-red-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg ">
+              <div>{laporan.dokumentasi ? "Ubah" : "Tambah"} Dokumentasi Kegiatan</div>
+              {laporan.dokumentasi && (<div className="p-4"><img src={laporan.dokumentasi} alt={laporan.dokumentasi} className="w-[50px] h-[50px] object-cover"/></div>)}
+              {/* <button onClick={showUploadWidget} type="button" className="w-fit py-2 px-4 flex justify-center items-center  bg-red-600 hover:bg-red-700 focus:ring-red-500 focus:ring-offset-red-200 text-white transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg ">
                 <svg width="20" height="20" fill="currentColor" className="mr-2" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg">
                   <path d="M1344 1472q0-26-19-45t-45-19-45 19-19 45 19 45 45 19 45-19 19-45zm256 0q0-26-19-45t-45-19-45 19-19 45 19 45 45 19 45-19 19-45zm128-224v320q0 40-28 68t-68 28h-1472q-40 0-68-28t-28-68v-320q0-40 28-68t68-28h427q21 56 70.5 92t110.5 36h256q61 0 110.5-36t70.5-92h427q40 0 68 28t28 68zm-325-648q-17 40-59 40h-256v448q0 26-19 45t-45 19h-256q-26 0-45-19t-19-45v-448h-256q-42 0-59-40-17-39 14-69l448-448q18-19 45-19t45 19l448 448q31 30 14 69z">
                   </path>
                 </svg>
                 Upload
-              </button>
+              </button> */}
+              <div className="border-2 w-fit p-4">
+                <input onChange={handleFile} type="file" name="dokumentasi" id="dokumentasi" accept=".jpg,.png,.gif" />
+              </div>
             </div>
 
             <div className="w-full mt-8">
