@@ -33,23 +33,25 @@ export default function () {
       <button onClick={debuger}>debug</button>
       <div className="flex justify-center font-light p-4 pb-24">
         <div className="bg-white w-full rounded-lg px-4 py-8 flex flex-col items-center gap-2">
-          <table className="w-full">
+          <table className="table p-4 bg-white shadow rounded-lg min-w-full">
             <thead>
               <tr>
-                <td>Tanggal</td>
-                <td>Catatan</td>
-                <td>Luaran</td>
-                <td>Dokumentasi</td>
+                <th className="border p-4 dark:border-dark-5 whitespace-nowrap font-normal text-gray-900">Tanggal</th>
+                <th className="border p-4 dark:border-dark-5 whitespace-nowrap font-normal text-gray-900">Catatan</th>
+                <th className="border p-4 dark:border-dark-5 whitespace-nowrap font-normal text-gray-900">Luaran</th>
+                <th className="border p-4 dark:border-dark-5 whitespace-nowrap font-normal text-gray-900">Dokumentasi</th>
               </tr>
             </thead>
             <tbody>
               {laporans.map((el) => {
                 return (
                   <tr key={el._id}>
-                    <td>{el.createdAt.split('T')[0]}</td>
-                    <td>{el.catatan}</td>
-                    <td>{el.luaran}</td>
-                    <td>{el.dokumentasi}</td>
+                    <td className="border p-4 dark:border-dark-5 text-center">{el.createdAt.split('T')[0]}</td>
+                    <td className="border p-4 dark:border-dark-5 text-center">{el.catatan}</td>
+                    <td className="border p-4 dark:border-dark-5 text-center">{el.luaran}</td>
+                    <td className="border p-4 dark:border-dark-5 text-center">
+                      <img src={el.dokumentasi} alt={el.dokumentasi} className="w-[50px] h-[50px] object-cover" />
+                    </td>
                   </tr>
                 )
               })}

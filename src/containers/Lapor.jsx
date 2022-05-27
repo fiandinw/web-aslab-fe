@@ -52,7 +52,7 @@ export default function () {
     e.preventDefault()
     const formData = new FormData()
     formData.append("file", imageSelected)
-    formData.append("upload_preset", "krvjtctc")
+    formData.append("upload_preset", process.env.CLOUDINARY)
     if (!laporans._id) {
       axios.post("https://api.cloudinary.com/v1_1/fiandinw/image/upload", formData)
         .then((res) => {
